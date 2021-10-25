@@ -106,7 +106,7 @@ wss.on('connection', function connection(ws) {
         if(password===UserDataBase[email].Password){
           var filename = "./uploads/"+Data.FileName;
           var dataToSend='';
-          const python = spawn('python', ['PythonFiles/HRV.py',filename]);
+          const python = spawn('python', ['../PythonFiles/HRV.py',filename]);
           python.stdout.on('data', function (data) {
           //console.log(`Pipe data from python script ...`);
           dataToSend += data.toString();
@@ -135,7 +135,7 @@ wss.on('connection', function connection(ws) {
         if(password===UserDataBase[email].Password){
           var filename = "./uploads/"+Data.FileName;
           var dataToSend='';
-          const python = spawn('python', ['PythonFiles/Post_Covid.py',filename]);
+          const python = spawn('python', ['../PythonFiles/Post_Covid.py',filename]);
           python.stdout.on('data', function (data) {
           //console.log(`Pipe data from python script ...`);
           dataToSend += data.toString();
@@ -168,7 +168,7 @@ wss.on('connection', function connection(ws) {
         if(password===UserDataBase[email].Password){
           var filename = "./uploads/"+Data.FileName;
           var dataToSend='';
-          const python = spawn('python', ['PythonFiles/Shap_Value.py',filename]);
+          const python = spawn('python', ['../PythonFiles/Shap_Value.py',filename]);
           python.stdout.on('data', function (data) {
           //console.log(`Pipe data from python script ...`);
           dataToSend += data.toString();
@@ -284,7 +284,7 @@ cron.schedule(`*/${Interval} * * * *`, () => {
   
   const jsonString = JSON.stringify(UserDataBase);
   //console.log(`Save Data ${isAnyChangeInDatabase} ${UserDataBase.size} ${jsonString}`);
-  fs.writeFile('./Database/DB.json', jsonString, err => {
+  fs.writeFile('.././Database/DB.json', jsonString, err => {
     if (err) {
         console.log('Error writing file', err)
     } else {
