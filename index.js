@@ -8,6 +8,7 @@ var cron = require('node-cron');
 var sendmail = require('./ServerFiles/sendmail');
 const {spawn} = require('child_process');
 var os = require('os');
+var tools = require('./ServerFiles/secure');
 
 const { exec } = require('child_process');
 
@@ -90,6 +91,37 @@ function Num(Data) {
 }
 
 
+var secure = tools.Encoder();
+var keys = Object.keys(secure);
+var en = encode("manish18156@iiitd.ac.in")
+console.log(en);
+console.log(decode(en));
+
+
+function encode(data) {
+  // put logic here to detect whether the specified origin is allowed.
+  var key = keys[between(0,keys.length-1)]
+  var encoded = "";
+  for (var i = 0; i < data.length; i++){
+      encoded+=secure[key][0][data[i]]
+  }
+  return key+encoded;
+}
+
+function decode(data) {
+  // put logic here to detect whether the specified origin is allowed.
+  var key = data.slice(0,7);
+  data = data.slice(7);
+  var decoded = "";
+  for (var i = 0; i < data.length; i++){
+      decoded+=secure[key][1][data[i]]
+  }
+  return decoded;
+}
+
+
+
+
 /*             WebSocket                             */
 
 // File Indexing
@@ -162,6 +194,20 @@ wss.on('connection', function connection(ws) {
       }
 
       
+    }
+
+    else if(Data.Type==="Resend_OTP"){
+      //{"Type":"Resend_OTP","Email":"mkk9313@gmail.com"}
+      var email = Data.Email;
+      if(ValidOTPEmail.has(email)){
+        var name = ValidOTPEmail.get(email).Name;
+        var password = ValidOTPEmail.get(email).Password;
+        sendmail.sendOTP(email,ValidOTPEmail.get(email).OTP,name);
+        ws.send(`{"Type":"${Data.Type}","Message":"Successful"}`);
+      }
+      else{
+        ws.send(`{"Type":"Error","Message":"SignUp Please...."}`);
+      }      
     }
     else if(Data.Type==="SignIn"){
       //{"Type":"SignIn","Name":"Manish","Email":"mkk9313@gmail.com","Password":"123456789"}
@@ -367,7 +413,7 @@ wss.on('connection', function connection(ws) {
       
 
 	else if(Data.Type==="ResampleFile"){
-      //{"Email":"mkk9313@gmail.com","Password":"123456789","Type":"File","File":"AAA","Name":"m.csv"}
+      //{"Email":"mkk9313@gmail.com","Password":"123456789","Type":"ResampleFile","Name":"m.csv"}
       var email = Data.Email;
       var password = Data.Password;
       var Hz = Data.Hz;
